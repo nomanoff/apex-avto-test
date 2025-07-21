@@ -4,6 +4,9 @@ import styled from "styled-components";
 import bgImg from "../assets/background1.png";
 import Navbar from "../components/Navbar";
 import Experience from '../components/Experience';
+import Hero from "../components/Hero";
+import Footer from "../components/Footer";
+
 
 const Container = styled.div`
   width: 100%;
@@ -16,7 +19,7 @@ const Container = styled.div`
   font-family: "Roboto", sans-serif;
 `;
 
-const Hero = styled.div`
+const Hero2 = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -68,17 +71,19 @@ const Home = () => {
     
     <Container>
       <Navbar />
-      <Hero>
+      <Hero2>
         <Title>Haydovchilik guvohnomasi uchun tayyorlaning</Title>
         <Subtitle>
           Haqiqiy amaliyot testlari, 700 dan ortiq savollar va interaktiv o‘quv vositalari.
         </Subtitle>
         <StartButton onClick={handleStart}>Hoziroq boshlang --&gt;</StartButton>
-      </Hero>
+      </Hero2>
     </Container>
 
 
     <Experience />
+    <Hero />
+    <Footer />
 
 
 
