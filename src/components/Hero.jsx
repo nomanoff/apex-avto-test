@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import bgImg from "../assets/background3.png"; 
+import bgImg from "../assets/background3.png";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+
 
 const HeroContainer = styled.div`
   width: 100%;
@@ -21,7 +24,7 @@ const Overlay = styled.div`
   z-index: 1;
 `;
 
-const Content = styled.div`
+const Content = styled(motion.div)`
   position: relative;
   z-index: 2;
   color: white;
@@ -51,12 +54,18 @@ const Button = styled.button`
 `;
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <HeroContainer>
       <Overlay />
-      <Content>
+      <Content
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        viewport={{ once: true }} >
         <Title>Hoziroq O'zingizni Darajangizni Tekshiring!</Title>
-        <Button>Hozir Boshlang --&gt;</Button>
+        <Button onClick={() => navigate("/select")}>Hozir Boshlang --&gt;</Button>
       </Content>
     </HeroContainer>
   );
