@@ -2,6 +2,27 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import placeholder from "../assets/placeholder.jpg";
 
+import styled from "styled-components";
+import bgImage from "../assets/defaultbackground.png"; 
+
+
+
+
+//style
+const Container2 = styled.div`
+ background: 
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url(${bgImage}) center/cover no-repeat;
+    width: 100%;
+    height: 100%;
+
+`;
+
+
+
+
+
+
 const LANG_FILES = {
   uzlotin: () => import("../data/uzlotin.json"),
   uzkiril: () => import("../data/uzkiril.json"),
@@ -90,6 +111,8 @@ const TicketQuiz = () => {
   if (!currentQuestion) return <div>Loading ticket...</div>;
 
   return (
+    <>
+    <Container2>
     <div style={{ padding: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h3 style={{ color: "yellow" }}>{currentQuestion.question}</h3>
@@ -141,6 +164,8 @@ const TicketQuiz = () => {
         </div>
       </div>
     </div>
+    </Container2>
+    </>
   );
 };
 

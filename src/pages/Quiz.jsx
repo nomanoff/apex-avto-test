@@ -1,7 +1,40 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-
 import placeholder from "../assets/placeholder.jpg";
+import styled from "styled-components";
+
+
+import bgImage from "../assets/defaultbackground.png"; 
+
+
+
+
+//style
+const Container = styled.div`
+ background: 
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url(${bgImage}) center/cover no-repeat;
+    width: 100%;
+    height: 100%;
+
+`;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// how it works
+
+
 
 const LANG_FILES = {
   uzlotin: () => import("../data/uzlotin.json"),
@@ -9,18 +42,17 @@ const LANG_FILES = {
   rus: () => import("../data/rus.json"),
 };
 
-const Quiz = () => {
-  const { state } = useLocation();
-  const navigate = useNavigate();
+const Home = () => {
   const [tests, setTests] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selected, setSelected] = useState(null);
   const [confirmed, setConfirmed] = useState(false);
   const [results, setResults] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(1500); // 25 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(1500); // 25 min
   const [finished, setFinished] = useState(false);
+  const [lang, setLang] = useState("uzlotin");
 
-  // ⏱️ Timer countdown
+  // ⏱ Timer
   useEffect(() => {
     if (finished) return;
     const timer = setInterval(() => {
@@ -36,22 +68,19 @@ const Quiz = () => {
     return () => clearInterval(timer);
   }, [finished]);
 
-  // 🎓 Load test data
+  // 🧠 Load data
   useEffect(() => {
     const loadData = async () => {
-      const lang = state?.lang || "uzlotin";
       const data = await LANG_FILES[lang]();
-      const shuffled = data.default
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 20);
+      const shuffled = data.default.sort(() => 0.5 - Math.random()).slice(0, 20);
       setTests(shuffled);
     };
     loadData();
-  }, []);
+  }, [lang]);
 
   const currentQuestion = tests[currentIdx];
 
-  // ⌨️ Keyboard support
+  // ⌨ Keyboard F1-F4
   useEffect(() => {
     const handleKey = (e) => {
       const key = e.key.toLowerCase();
@@ -85,15 +114,13 @@ const Quiz = () => {
         const wrongCount =
           results.filter((r) => r === "wrong").length + (!isCorrect ? 1 : 0);
 
-        // ❌ Fail logic
         if (wrongCount > 3) {
           evaluateResults(false, "too_many_mistakes");
           return;
         }
 
-        // ✅ Complete test logic
         if (nextIdx >= tests.length) {
-          evaluateResults(false); // quiz complete
+          evaluateResults(false); // done
         } else {
           setCurrentIdx(nextIdx);
         }
@@ -117,7 +144,7 @@ const Quiz = () => {
           ? `❌ Vaqt tugadi. Siz testdan o'tolmadingiz. To'g'ri javoblar: ${correct}/20`
           : `❌ Siz testdan o'tolmadingiz. To'g'ri javoblar: ${correct}/20`
       );
-      navigate("/"); // restart
+      window.location.reload(); // refresh page
     }, 1000);
   };
 
@@ -125,18 +152,17 @@ const Quiz = () => {
     evaluateResults(false);
   };
 
-  if (!currentQuestion) return <div>Loading...</div>;
-
-  // 🕐 Time format helper
   const formatTime = (sec) => {
-    const m = Math.floor(sec / 60)
-      .toString()
-      .padStart(2, "0");
+    const m = Math.floor(sec / 60).toString().padStart(2, "0");
     const s = (sec % 60).toString().padStart(2, "0");
     return `${m}:${s}`;
   };
 
+  if (!currentQuestion) return <div>Yuklanmoqda...</div>;
+
   return (
+    <>
+    <Container>
     <div style={{ padding: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h2 style={{ color: "yellow" }}>{currentQuestion.question}</h2>
@@ -154,7 +180,6 @@ const Quiz = () => {
                 border: "1px solid gray",
                 padding: 10,
                 marginBottom: 10,
-
                 background:
                   confirmed && selected === idx
                     ? choice.answer
@@ -185,7 +210,7 @@ const Quiz = () => {
           />
           <div style={{ marginTop: 10 }}>
             <strong style={{ color: "#f0f0f0" }}>
-              Question {currentIdx + 1} of 20
+              Savol {currentIdx + 1} / 20
             </strong>
             <div style={{ display: "flex", marginTop: 5, flexWrap: "wrap" }}>
               {Array.from({ length: 20 }).map((_, i) => (
@@ -228,13 +253,15 @@ const Quiz = () => {
                 cursor: "pointer",
               }}
             >
-              ❌ Finish Test
+              ❌ Testni Yakunlash
             </button>
           </div>
         </div>
       </div>
     </div>
+    </Container>
+    </>
   );
 };
 
-export default Quiz;
+export default Home;

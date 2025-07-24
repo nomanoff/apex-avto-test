@@ -3,16 +3,15 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import bgImg from "../assets/background1.png";
 import Navbar from "../components/Navbar";
-import Experience from '../components/Experience';
+import Experience from "../components/Experience";
 import Hero from "../components/Hero";
 import Footer from "../components/Footer";
-
+import { motion } from "framer-motion";
 
 const Container = styled.div`
   width: 100%;
   height: 100vh;
-  background: 
-    linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.42)),
+  background: linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.42)),
     url(${bgImg}) center/cover no-repeat;
   display: flex;
   flex-direction: column;
@@ -68,27 +67,29 @@ const Home = () => {
 
   return (
     <>
-    
-    <Container>
-      <Navbar />
-      <Hero2>
-        <Title>Haydovchilik guvohnomasi uchun tayyorlaning</Title>
-        <Subtitle>
-          Haqiqiy amaliyot testlari, 700 dan ortiq savollar va interaktiv o‘quv vositalari.
-        </Subtitle>
-        <StartButton onClick={handleStart}>Hoziroq boshlang --&gt;</StartButton>
-      </Hero2>
-    </Container>
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+      >
+        <Container>
+          <Navbar />
+          <Hero2>
+            <Title>Haydovchilik guvohnomasi uchun tayyorlaning</Title>
+            <Subtitle>
+              Haqiqiy amaliyot testlari, 700 dan ortiq savollar va interaktiv
+              o‘quv vositalari.
+            </Subtitle>
+            <StartButton onClick={() => navigate("/select")}>
+              Hoziroq boshlang --&gt;
+            </StartButton>
+          </Hero2>
+        </Container>
 
-
-    <Experience />
-    <Hero />
-    <Footer />
-
-
-
-
-
+        <Experience />
+        <Hero />
+        <Footer />
+      </motion.div>
     </>
   );
 };

@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { FaFileAlt } from "react-icons/fa";
 import { FaPalette } from "react-icons/fa";
 import { FaBookOpen } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const FeaturesSection = styled.section`
   background-color: #cceeff;
@@ -10,7 +11,7 @@ const FeaturesSection = styled.section`
 `;
 
 const Title = styled.h2`
-color: black;
+  color: black;
   font-size: 50px;
   font-weight: bold;
   margin-bottom: 40px;
@@ -24,7 +25,8 @@ const FeaturesGrid = styled.div`
   margin-top: 100px;
 `;
 
-const FeatureCard = styled.div`
+const FeatureCard = styled(motion.div)`
+  // faqat bu yerni o'zgartirdik
   background: white;
   border-radius: 20px;
   padding: 30px 20px;
@@ -55,35 +57,34 @@ const Features = () => {
     <FeaturesSection>
       <Title>Haqiqiy Amaliyot</Title>
       <FeaturesGrid>
-        <FeatureCard>
-          <IconWrapper>
-            <FaFileAlt />
-          </IconWrapper>
-          <CardTitle>Haqiqiy Amaliyot</CardTitle>
-          <CardText>
-            Biz bilan haqiqiy imtihon kabi mashq qiling — test simulyatori.
-          </CardText>
-        </FeatureCard>
-
-        <FeatureCard>
-          <IconWrapper>
-            <FaPalette />
-          </IconWrapper>
-          <CardTitle>Chiroyli Dizayn</CardTitle>
-          <CardText>
-            Toza va zamonaviy interfeys hamda silliq animatsiyalardan zavqlaning.
-          </CardText>
-        </FeatureCard>
-
-        <FeatureCard>
-          <IconWrapper>
-            <FaBookOpen />
-          </IconWrapper>
-          <CardTitle>20+ Mashqlar</CardTitle>
-          <CardText>
-            700 dan ortiq savollardan o‘rganing va o‘z rivojlanishingizni kuzatib boring.
-          </CardText>
-        </FeatureCard>
+        {[...Array(3)].map((_, index) => (
+          <FeatureCard
+            key={index}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.2 }}
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            <IconWrapper>
+              {index === 0 && <FaFileAlt />}
+              {index === 1 && <FaPalette />}
+              {index === 2 && <FaBookOpen />}
+            </IconWrapper>
+            <CardTitle>
+              {index === 0 && "Haqiqiy Amaliyot"}
+              {index === 1 && "Chiroyli Dizayn"}
+              {index === 2 && "20+ Mashqlar"}
+            </CardTitle>
+            <CardText>
+              {index === 0 &&
+                "Biz bilan haqiqiy imtihon kabi mashq qiling — test simulyatori."}
+              {index === 1 &&
+                "Toza va zamonaviy interfeys hamda silliq animatsiyalardan zavqlaning."}
+              {index === 2 &&
+                "700 dan ortiq savollardan o‘rganing va o‘z rivojlanishingizni kuzatib boring."}
+            </CardText>
+          </FeatureCard>
+        ))}
       </FeaturesGrid>
     </FeaturesSection>
   );
