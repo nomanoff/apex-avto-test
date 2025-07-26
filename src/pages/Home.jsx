@@ -7,6 +7,10 @@ import Experience from "../components/Experience";
 import Hero from "../components/Hero";
 import Footer from "../components/Footer";
 import { motion } from "framer-motion";
+// import { MdStart } from "react-icons/md";
+import { GrFormNextLink } from "react-icons/gr";
+import "..//App.css";
+
 
 const Container = styled.div`
   width: 100%;
@@ -33,6 +37,9 @@ const Title = styled.h1`
   font-weight: 700;
   margin-bottom: 20px;
 `;
+const CntForBtn = styled.div`
+display:flex;
+`
 
 const Subtitle = styled.p`
   font-size: 18px;
@@ -81,8 +88,13 @@ const Home = () => {
               o‘quv vositalari.
             </Subtitle>
             <StartButton onClick={() => navigate("/select")}>
-              Hoziroq boshlang --&gt;
+             <CntForBtn>
+             <h1 className="h11">Hoziroq boshlang</h1> 
+             <GrFormNextLink size={40}   /> 
+             </CntForBtn>
+
             </StartButton>
+
           </Hero2>
         </Container>
 
