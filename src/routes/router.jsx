@@ -6,6 +6,7 @@ import Tickets from "../pages/Tickets";
 import TicketQuiz from "../pages/TicketQuiz";
 import Select from "../pages/Select";
 
+
 export const router = createBrowserRouter([
   { path: "/", element: <Home /> },
   { path: "/quiz", element: <Quiz /> },
