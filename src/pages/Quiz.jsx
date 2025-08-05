@@ -1,40 +1,171 @@
 import { useEffect, useState } from "react";
 import placeholder from "../assets/placeholder.jpg";
 import styled from "styled-components";
+import bgImage from "../assets/defaultbackground.png";
+import { motion, AnimatePresence } from "framer-motion"; // ⬅️ Kiritildi
 
-
-import bgImage from "../assets/defaultbackground.png"; 
-
-
-
-
-//style
 const Container = styled.div`
- background: 
+  background: 
     linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url(${bgImage}) center/cover no-repeat;
-    width: 100%;
-    height: 100%;
-
+  width: 100%;
+  height: 100%;
+  padding: 20px;
 `;
 
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  height: 70px;
+  align-items: center;
+  background-color: #2f466c;
+  border: 3px solid #101824;
+`;
 
+const QuestionText = styled.h2`
+  color: yellow;
+  font-size: 20px;
+`;
 
+const Timer = styled.div`
+  font-weight: bold;
+  font-size: 18px;
+  color: lightgray;
+`;
 
+const Layout = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+`;
 
+const ChoicesWrapper = styled.div`
+  flex: 1;
+`;
 
+const Choice = styled.div`
+  border: 1px solid gray;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: ${({ confirmed, selected, correct }) =>
+    confirmed && selected
+      ? correct
+        ? "lightgreen"
+        : "salmon"
+      : selected
+      ? "#929292"
+      : "#fff"};
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  user-select: none;
+`;
 
+const MediaWrapper = styled.div`
+  flex: 1;
+`;
 
+const MediaImage = styled.img`
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+`;
 
+const ProgressWrapper = styled.div`
+  margin-top: 10px;
+`;
 
+const ProgressText = styled.strong`
+  color: #f0f0f0;
+`;
 
+const ProgressGrid = styled.div`
+  display: flex;
+  margin-top: 5px;
+  flex-wrap: wrap;
+`;
 
+const ProgressBox = styled.div`
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  margin: 2px;
+  text-align: center;
+  border: 1px solid gray;
+  background: ${({ status, active, locked }) =>
+    locked
+      ? "red"
+      : status === "correct"
+      ? "lightgreen"
+      : status === "wrong"
+      ? "salmon"
+      : active
+      ? "#ccc"
+      : "#fff"};
+  cursor: ${({ locked }) => (locked ? "not-allowed" : "pointer")};
+`;
+const FinishButton = styled.button`
+  margin-top: 15px;
+  padding: 8px 16px;
+  background: yellow;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+`;
 
+const TimerCtn = styled.div`
+  padding: 20px;
+`;
 
+const QuizTextCtn = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 60px;
+  width: 85%;
+`;
 
-// how it works
+/* ======== MODAL ======== */
+const ResultModal = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
 
+const ResultBox = styled(motion.div)`
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: 350px;
+`;
 
+const ResultTitle = styled.h2`
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #0cff0c;
+`;
+
+const ResultText = styled.p`
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: black;
+`;
+
+const CloseBtn = styled.button`
+  padding: 10px 20px;
+  background: yellow;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+`;
 
 const LANG_FILES = {
   uzlotin: () => import("../data/uzlotin.json"),
@@ -50,16 +181,18 @@ const Home = () => {
   const [results, setResults] = useState([]);
   const [timeLeft, setTimeLeft] = useState(1500); // 25 min
   const [finished, setFinished] = useState(false);
-  const [lang, setLang] = useState("uzlotin");
+  const [lang] = useState("uzlotin");
 
-  // ⏱ Timer
+  const [showResult, setShowResult] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
+
   useEffect(() => {
     if (finished) return;
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          evaluateResults(true); // time up
+          evaluateResults(true);
           return 0;
         }
         return prev - 1;
@@ -68,7 +201,6 @@ const Home = () => {
     return () => clearInterval(timer);
   }, [finished]);
 
-  // 🧠 Load data
   useEffect(() => {
     const loadData = async () => {
       const data = await LANG_FILES[lang]();
@@ -80,7 +212,6 @@ const Home = () => {
 
   const currentQuestion = tests[currentIdx];
 
-  // ⌨ Keyboard F1-F4
   useEffect(() => {
     const handleKey = (e) => {
       const key = e.key.toLowerCase();
@@ -120,7 +251,7 @@ const Home = () => {
         }
 
         if (nextIdx >= tests.length) {
-          evaluateResults(false); // done
+          evaluateResults(false);
         } else {
           setCurrentIdx(nextIdx);
         }
@@ -133,19 +264,8 @@ const Home = () => {
   const evaluateResults = (timeUp = false, reason = "") => {
     setFinished(true);
     const correct = results.filter((r) => r === "correct").length;
-    const passed = correct >= 18;
-    setTimeout(() => {
-      alert(
-        passed
-          ? `✅ Siz testni topshirdingiz! To'g'ri javoblar: ${correct}/20`
-          : reason === "too_many_mistakes"
-          ? "❌ Siz 3 martadan ko'p xatoga yo'l qo'ydingiz. Test tugadi."
-          : timeUp
-          ? `❌ Vaqt tugadi. Siz testdan o'tolmadingiz. To'g'ri javoblar: ${correct}/20`
-          : `❌ Siz testdan o'tolmadingiz. To'g'ri javoblar: ${correct}/20`
-      );
-      window.location.reload(); // refresh page
-    }, 1000);
+    setFinalScore(correct);
+    setShowResult(true); // modalni ko‘rsatish
   };
 
   const handleFinishNow = () => {
@@ -158,109 +278,98 @@ const Home = () => {
     return `${m}:${s}`;
   };
 
+  const handleCloseModal = () => {
+    setShowResult(false);
+    window.location.reload();
+  };
+
   if (!currentQuestion) return <div>Yuklanmoqda...</div>;
 
   return (
-    <>
     <Container>
-    <div style={{ padding: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h2 style={{ color: "yellow" }}>{currentQuestion.question}</h2>
-        <div style={{ fontWeight: "bold", fontSize: 18, color: "lightgray" }}>
-          🕐 {formatTime(timeLeft)}
-        </div>
-      </div>
+      <Header>
+        <QuizTextCtn>
+          <QuestionText>{currentQuestion.question}</QuestionText>
+        </QuizTextCtn>
+        <TimerCtn>
+          <Timer>🕐 {formatTime(timeLeft)}</Timer>
+        </TimerCtn>
+      </Header>
 
-      <div style={{ display: "flex", gap: 20 }}>
-        <div style={{ flex: 1 }}>
+      <Layout>
+        <ChoicesWrapper>
           {currentQuestion.choises.map((choice, idx) => (
-            <div
+            <Choice
               key={idx}
-              style={{
-                border: "1px solid gray",
-                padding: 10,
-                marginBottom: 10,
-                background:
-                  confirmed && selected === idx
-                    ? choice.answer
-                      ? "lightgreen"
-                      : "salmon"
-                    : selected === idx
-                    ? "#ddd"
-                    : "#fff",
-                cursor: finished ? "not-allowed" : "pointer",
-                userSelect: "none",
-              }}
+              confirmed={confirmed}
+              selected={selected === idx}
+              correct={choice.answer}
+              disabled={finished}
               onClick={() => handleSelect(idx)}
             >
               {`F${idx + 1}`} — {choice.text}
-            </div>
+            </Choice>
           ))}
-        </div>
+        </ChoicesWrapper>
 
-        <div style={{ flex: 1 }}>
-          <img
+        <MediaWrapper>
+          <MediaImage
             src={
               currentQuestion.media.exist
                 ? `/src/assets/test-images/${currentQuestion.media.name}.png`
                 : placeholder
             }
             alt="question"
-            style={{ width: "100%", maxHeight: 300, objectFit: "contain" }}
           />
-          <div style={{ marginTop: 10 }}>
-            <strong style={{ color: "#f0f0f0" }}>
-              Savol {currentIdx + 1} / 20
-            </strong>
-            <div style={{ display: "flex", marginTop: 5, flexWrap: "wrap" }}>
+          <ProgressWrapper>
+            <ProgressText>Savol {currentIdx + 1} / 20</ProgressText>
+            <ProgressGrid>
               {Array.from({ length: 20 }).map((_, i) => (
-                <div
-                  key={i}
-                  onClick={() => !finished && setCurrentIdx(i)}
-                  style={{
-                    width: 30,
-                    height: 30,
-                    lineHeight: "30px",
-                    margin: 2,
-                    textAlign: "center",
-                    border: "1px solid gray",
-                    background:
-                      results[i] === "correct"
-                        ? "lightgreen"
-                        : results[i] === "wrong"
-                        ? "salmon"
-                        : i === currentIdx
-                        ? "#ccc"
-                        : "#fff",
-                    cursor: "pointer",
-                  }}
-                >
-                  {i + 1}
-                </div>
+                <ProgressBox
+  key={i}
+  status={results[i]}
+  active={i === currentIdx}
+  locked={i < currentIdx} // yangi prop
+  onClick={() => {
+    // Faqat hozirgi yoki keyingi savollarga o'tish mumkin
+    if (!finished && i >= currentIdx) {
+      setCurrentIdx(i);
+    }
+  }}
+>
+  {i + 1}
+</ProgressBox>
               ))}
-            </div>
-
-            <button
-              onClick={handleFinishNow}
-              disabled={finished}
-              style={{
-                marginTop: 15,
-                padding: "8px 16px",
-                background: "red",
-                color: "white",
-                border: "none",
-                borderRadius: 4,
-                cursor: "pointer",
-              }}
-            >
+            </ProgressGrid>
+            <FinishButton onClick={handleFinishNow} disabled={finished}>
               ❌ Testni Yakunlash
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+            </FinishButton>
+          </ProgressWrapper>
+        </MediaWrapper>
+      </Layout>
+
+      {/* ===== RESULT MODAL ===== */}
+      <AnimatePresence>
+        {showResult && (
+          <ResultModal
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <ResultBox
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ResultTitle>Natija</ResultTitle>
+              <ResultText>{finalScore} / 20 ta to‘g‘ri</ResultText>
+              <CloseBtn onClick={handleCloseModal}>Yopish</CloseBtn>
+            </ResultBox>
+          </ResultModal>
+        )}
+      </AnimatePresence>
     </Container>
-    </>
   );
 };
 
