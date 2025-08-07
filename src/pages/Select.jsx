@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+
 import { useSpring, animated } from "@react-spring/web";
 
 import bgImage from "../assets/defaultbackground.png"; 
