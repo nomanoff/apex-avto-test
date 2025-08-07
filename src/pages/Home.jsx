@@ -6,10 +6,12 @@ import Navbar from "../components/Navbar";
 import Experience from "../components/Experience";
 import Hero from "../components/Hero";
 import Footer from "../components/Footer";
+
 import { motion } from "framer-motion";
 // import { MdStart } from "react-icons/md";
 import { GrFormNextLink } from "react-icons/gr";
 import "..//App.css";
+
 
 
 const Container = styled.div`
@@ -66,7 +68,9 @@ const StartButton = styled.button`
 
 const Home = () => {
   const [lang, setLang] = useState("uzlotin");
+  
   const navigate = useNavigate();
+
 
   const handleStart = () => {
     navigate("/quiz", { state: { lang } });
@@ -74,11 +78,7 @@ const Home = () => {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-      >
+
         <Container>
           <Navbar />
           <Hero2>
@@ -101,7 +101,6 @@ const Home = () => {
         <Experience />
         <Hero />
         <Footer />
-      </motion.div>
     </>
   );
 };

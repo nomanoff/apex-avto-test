@@ -8,6 +8,7 @@ import Select from "../pages/Select";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 
+
 export const router = createBrowserRouter([
   { path: "/", element: <Home /> },
   { path: "/quiz", element: <Quiz /> },
