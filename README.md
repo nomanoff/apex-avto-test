@@ -4,3 +4,4 @@
 3. Rivojiddin Komiljanov
 4. Hurriyatbonu
 5. Amirbek Hojiev
+6. Rakhmatov Ibrohim
