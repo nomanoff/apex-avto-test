@@ -1,6 +1,9 @@
 # Contributers' list:
+
 1. Adam (teacher)
 2. Hojiev Amirbek
-3. Bakhtiyor
+3. Rivojiddin Komiljanov
+4. Hurriyatbonu
+5. Bakhtiyor
 
 
