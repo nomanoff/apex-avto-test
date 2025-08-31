@@ -8,10 +8,12 @@
     "email": "im.nomanoff@gmail.com"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node scripts/sync-assets.mjs && vite",
+    "build": "node scripts/sync-assets.mjs && node scripts/merge-dataset.mjs && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "data:merge": "node scripts/merge-dataset.mjs",
+    "assets:sync": "node scripts/sync-assets.mjs"
   },
   "dependencies": {
     "@react-spring/web": "^10.0.1",

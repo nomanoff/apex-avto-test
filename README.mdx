@@ -1,0 +1,15 @@
+# Apex Avto Test (MVP)
+
+Implements exam-simulator MVP per PRD: 20-question exam, practice tickets, language switcher, fullscreen, keyboard shortcuts, and dataset merge.
+
+## Scripts
+
+- yarn dev — start Vite dev server
+- yarn assets:sync — copy test images to public
+- yarn data:merge — build merged dataset at public/dataset.json
+- yarn build — sync assets, merge dataset, build PWA
+
+## Notes
+
+- Question data is loaded from public/dataset.json generated from src/data/\*.json
+- Images are served from public/test-images per media.name.png
