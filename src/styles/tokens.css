@@ -1,0 +1,21 @@
+:root {
+  --primary: #1e3a8a;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --muted: #6b7280;
+  --accent: #facc15;
+  --text-dark: #0f172a; /* FIGMA-MATCH: approx */
+  --text-muted: #475569; /* FIGMA-MATCH: approx */
+  --surface: #ffffff;
+  --surface-alt: #f8fafc; /* slate-50 */
+  --radius: 12px;
+  --fs-xl: clamp(32px, 4vw, 48px);
+  --fs-2xl: clamp(40px, 6vw, 64px);
+  --fs-lg: 22px;
+  --fs-md: 16px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+}
