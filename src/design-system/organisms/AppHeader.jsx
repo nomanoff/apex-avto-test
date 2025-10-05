@@ -1,53 +1,31 @@
-import { Link, useLocation } from "react-router-dom";
+import useFullscreen from "../../hooks/useFullscreen";
 import useLang from "../../hooks/useLang";
 import { LANGS } from "../../app/i18n";
-import {
-  IoHomeOutline,
-  IoDocumentTextOutline,
-  IoBookOutline,
-} from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 export default function AppHeader() {
+  const { isFs, enter, exit } = useFullscreen();
   const { lang, setLang } = useLang();
-  const { pathname } = useLocation();
-
-  const nav = [
-    { to: "/", label: navText.home[lang], icon: IoHomeOutline },
-    { to: "/exam", label: navText.exam[lang], icon: IoDocumentTextOutline },
-    { to: "/practice", label: navText.practice[lang], icon: IoBookOutline },
-  ];
-
   return (
-    <header style={wrap}>
-      <div style={left}>
-        <img src="/assets/APEXLOGO.png" alt="apex avto test" style={logo} />
-        <span style={brand}>apex avto test</span>
+    <header style={bar}>
+      <div style={brand}>
+        <span style={brandDot} aria-hidden />
+        <span style={{ fontWeight: 800 }}>Apex Avto Test</span>
       </div>
-      <nav style={center} aria-label="Primary">
-        {nav.map((n) => {
-          const ActiveIcon = n.icon;
-          const active = pathname === n.to;
-          return (
-            <Link
-              key={n.to}
-              to={n.to}
-              style={{ ...navItem, ...(active ? navItemActive : null) }}
-            >
-              <ActiveIcon size={16} />
-              <span>{n.label}</span>
-            </Link>
-          );
-        })}
+      <nav style={navCenter} aria-label="Primary">
+        <Link to="/exam" style={navLink}>
+          Exam
+        </Link>
+        <Link to="/practice" style={navLink}>
+          Practice
+        </Link>
       </nav>
-      <div style={right}>
-        <label htmlFor="lang" className="sr-only">
-          Language
-        </label>
+      <div style={controls}>
         <select
-          id="lang"
           value={lang}
           onChange={(e) => setLang(e.target.value)}
           style={select}
+          aria-label="Language"
         >
           {LANGS.map((l) => (
             <option key={l} value={l}>
@@ -55,57 +33,49 @@ export default function AppHeader() {
             </option>
           ))}
         </select>
+        <button
+          onClick={isFs ? exit : enter}
+          style={ghostBtn}
+          aria-label="Toggle fullscreen"
+        >
+          {isFs ? "Exit" : "Fullscreen"}
+        </button>
       </div>
     </header>
   );
 }
 
-const navText = {
-  home: {
-    "uz-Latn": "Bosh sahifa",
-    "uz-Cyrl": "Бош саҳифа",
-    ru: "Главная",
-  },
-  exam: {
-    "uz-Latn": "Imtixon",
-    "uz-Cyrl": "Имтиҳон",
-    ru: "Экзамен",
-  },
-  practice: {
-    "uz-Latn": "Mashq",
-    "uz-Cyrl": "Машқ",
-    ru: "Практика",
-  },
-};
-
-const wrap = {
+const bar = {
   display: "flex",
   alignItems: "center",
-  height: 64,
-  padding: "0 16px",
+  justifyContent: "space-between",
+  padding: "12px 16px",
   borderBottom: "1px solid #e5e7eb",
-  background: "#fff",
-  gap: 12,
+  background: "#ffffff",
+  position: "sticky",
+  top: 0,
+  zIndex: 10,
 };
-const left = { display: "flex", alignItems: "center", gap: 10 };
-const logo = { width: 28, height: 28, borderRadius: 999, objectFit: "contain" };
-const brand = { fontWeight: 700, color: "#0f172a", textTransform: "lowercase" };
-const center = { display: "flex", gap: 18, marginLeft: 16 };
-const right = { marginLeft: "auto" };
-const navItem = {
-  display: "inline-flex",
-  gap: 6,
-  alignItems: "center",
-  color: "#111827",
-  textDecoration: "none",
-  fontSize: 14,
+const brand = { display: "flex", alignItems: "center", gap: 10 };
+const brandDot = {
+  width: 18,
+  height: 18,
+  borderRadius: 999,
+  background: "var(--primary)",
+};
+const navCenter = { display: "flex", gap: 16 };
+const navLink = { color: "#111827", textDecoration: "none", fontWeight: 600 };
+const controls = { display: "flex", alignItems: "center", gap: 8 };
+const select = {
+  border: "1px solid #e5e7eb",
   padding: "6px 8px",
   borderRadius: 8,
+  background: "#fff",
 };
-const navItemActive = { background: "#f3f4f6" };
-const select = {
-  padding: "6px 10px",
-  borderRadius: 8,
+const ghostBtn = {
   border: "1px solid #e5e7eb",
   background: "#fff",
+  padding: "6px 10px",
+  borderRadius: 8,
+  cursor: "pointer",
 };

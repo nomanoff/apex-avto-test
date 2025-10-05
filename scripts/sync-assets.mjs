@@ -10,15 +10,6 @@ const placeholderSrc = path.resolve(
 const placeholderDst = path.resolve(process.cwd(), "public/placeholder.jpg");
 const assetsSrc = path.resolve(process.cwd(), "src/assets");
 const assetsDst = path.resolve(process.cwd(), "public/assets");
-const rootIcons = [
-  "apple-touch-icon.png",
-  "favicon-96x96.png",
-  "site.webmanifest",
-  "web-app-manifest-192x192.png",
-  "web-app-manifest-512x512.png",
-  "favicon.ico",
-  "favicon.svg",
-];
 
 function ensureDir(p) {
   fs.mkdirSync(p, { recursive: true });
@@ -52,54 +43,62 @@ try {
     else fs.copyFileSync(s, d);
   }
 } catch {}
-console.log(
-  "Assets synced -> public/test-images, public/placeholder.jpg, public/assets"
-);
-
-// Place root favicon and manifest assets under public/ properly
+// Replace public favicon/icon files with the ones from repo root
 try {
+  const publicDir = path.resolve(process.cwd(), "public");
+  ensureDir(publicDir);
+  const rootIcons = [
+    "apple-touch-icon.png",
+    "favicon-96x96.png",
+    "web-app-manifest-192x192.png",
+    "web-app-manifest-512x512.png",
+    "favicon.ico",
+    "favicon.svg",
+  ];
   for (const name of rootIcons) {
     const src = path.resolve(process.cwd(), name);
-    if (fs.existsSync(src)) {
-      const dest = path.resolve(process.cwd(), "public", name);
-      fs.copyFileSync(src, dest);
-    }
+    const dst = path.join(publicDir, name);
+    if (fs.existsSync(dst)) fs.rmSync(dst, { force: true });
+    if (fs.existsSync(src)) fs.copyFileSync(src, dst);
   }
-  // Clean old ones if any mismatched
-  const publicDir = path.resolve(process.cwd(), "public");
-  for (const entry of fs.readdirSync(publicDir)) {
-    if (
-      /^(favicon|apple-touch-icon|web-app-manifest|site\.webmanifest)/.test(
-        entry
-      )
-    ) {
-      const onRootList =
-        rootIcons.includes(entry) || entry === "site.webmanifest";
-      // If not in provided root list nor expected, remove
-      if (!onRootList) {
-        try {
-          fs.unlinkSync(path.join(publicDir, entry));
-        } catch {}
-      }
-    }
-  }
-  // Ensure we have an apple-touch-icon for iOS: if missing, derive from icon-192x192
-  try {
-    const appleIcon = path.resolve(
-      process.cwd(),
-      "public",
-      "apple-touch-icon.png"
+  const webmanifestPath = path.join(publicDir, "sete.webmanifest");
+  if (!fs.existsSync(webmanifestPath)) {
+    const manifest = {
+      name: "Apex Avto Test",
+      short_name: "ApexAvto",
+      start_url: "/",
+      display: "standalone",
+      background_color: "#ffffff",
+      theme_color: "#1e3a8a",
+      icons: [
+        {
+          src: "/web-app-manifest-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          src: "/web-app-manifest-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
+        { src: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+        {
+          src: "/apple-touch-icon.png",
+          sizes: "180x180",
+          type: "image/png",
+          purpose: "apple-touch-icon",
+        },
+      ],
+    };
+    fs.writeFileSync(
+      webmanifestPath,
+      JSON.stringify(manifest, null, 2),
+      "utf-8"
     );
-    if (!fs.existsSync(appleIcon)) {
-      const candidate = path.resolve(
-        process.cwd(),
-        "public",
-        "icon-192x192.png"
-      );
-      if (fs.existsSync(candidate)) {
-        fs.copyFileSync(candidate, appleIcon);
-      }
-    }
-  } catch {}
-  console.log("Favicons/manifests synced -> public/");
-} catch {}
+  }
+} catch (e) {
+  console.warn("Favicon/webmanifest sync warning:", e?.message || e);
+}
+console.log(
+  "Assets synced -> public/test-images, public/placeholder.jpg, public/assets, public favicons & sete.webmanifest"
+);
